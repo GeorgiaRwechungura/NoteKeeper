@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -25,6 +26,9 @@ public class MainActivity extends AppCompatActivity
     private NoteRecycleAdapter noteRecycleAdapter;
     private RecyclerView mRecycleItems;
     private LinearLayoutManager mNotesLinerLayoutManger;
+    private GridLayoutManager mCourseLayoutManger;
+    private CourseRecycleAdapter mCourseRecycleAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +71,15 @@ public class MainActivity extends AppCompatActivity
         mRecycleItems = (RecyclerView) findViewById(R.id.list_items);
 
         mNotesLinerLayoutManger = new LinearLayoutManager(this);
+        mCourseLayoutManger = new GridLayoutManager(this,2);
 
 
         List<NoteInfo> notes=DataManager.getInstance().getNotes();
         noteRecycleAdapter = new NoteRecycleAdapter(this,notes);
-        displayNotes();
+
+        List<CourseInfo> courses= DataManager.getInstance().getCourses();
+        mCourseRecycleAdapter = new CourseRecycleAdapter(this,courses);
+           displayNotes();
 
         // recycleNotes.notify();
     }
@@ -81,9 +89,20 @@ public class MainActivity extends AppCompatActivity
         mRecycleItems.setLayoutManager(mNotesLinerLayoutManger);
 
         mRecycleItems.setAdapter(noteRecycleAdapter);
-        NavigationView navigationView=findViewById(R.id.nav_view);
-        Menu menu=navigationView.getMenu();
-        menu.findItem(R.id.nav_notes).setChecked(true);
+        selectNavigationMenuItem(R.id.nav_notes);
+
+    }
+    private  void selectNavigationMenuItem(int id){
+
+         NavigationView navigationView=findViewById(R.id.nav_view);  
+         Menu menu=navigationView.getMenu();                         
+         menu.findItem(id).setChecked(true);
+    }
+
+    private void displayCourses(){
+        mRecycleItems.setLayoutManager(mCourseLayoutManger);
+        mRecycleItems.setAdapter(mCourseRecycleAdapter);
+        selectNavigationMenuItem(R.id.nav_courses);
     }
 
 
@@ -130,7 +149,7 @@ public class MainActivity extends AppCompatActivity
            // handleSelection("Notes");
             // Handle the camera action
         } else if (id == R.id.nav_courses) {
-            handleSelection(" Courses");
+            displayCourses();
 
         } else if (id == R.id.nav_share) {
 
