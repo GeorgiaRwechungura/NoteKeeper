@@ -2,11 +2,18 @@ package com.jwhh.jim.notekeeper;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.view.View;
+/*import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.view.View;*/
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -49,7 +56,7 @@ public class NotelistActivity extends AppCompatActivity {
 
                    final RecyclerView recycleNotes= (RecyclerView) findViewById(R.id.list_notes);
 
-                   final LinearLayoutManager notesLinerLayoutManger=new LinearLayoutManager(this);
+                   final LinearLayoutManager notesLinerLayoutManger=new LinearLayoutManager(NotelistActivity.this);
                    recycleNotes.setLayoutManager(notesLinerLayoutManger);
 
                    List<NoteInfo> notes=DataManager.getInstance().getNotes();
