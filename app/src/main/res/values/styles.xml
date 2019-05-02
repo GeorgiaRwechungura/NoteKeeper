@@ -1,24 +1,48 @@
-<resources>
+ <resources xmlns:parent="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <!--<item name="android:textSize">30sp</item>-->
+        <!--<item name="editTextStyle" >@style/WeirdEditText</item>>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.AppBarOverlay" parent="Theme.AppCompat.Light.DarkActionBar" />
+    <style name="TextColor" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary"> @color/TextColorPrimary</item>
+
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <style name="CourseTitle" parent="@style/TextAppearance.AppCompat.Medium">
         <item name="android:textColor" >@color/PluralSight_Orange</item>
         <item name="android:textStyle">bold</item>
+
+    </style>
+     <style name="WeirdEditText" parent="Widget.AppCompat.EditText">
+         <item name="android:textColor">@android:color/holo_green_dark</item>
+         <item name="android:textColorHint">@android:color/holo_red_dark</item>
+     </style>
+    <style name="AddFab" parent="@style/Widget.Design.FloatingActionButton">
+
+        <item name="srcCompat">@drawable/ic_add_circle_black_24dp </item>
+        <item name="android:tint"> @android:color/white</item>
     </style>
 
-</resources>
+     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+         <item name="spinBars">true</item>
+         <item name="color">@android:color/white</item>
+     </style>
+
+
+ </resources>

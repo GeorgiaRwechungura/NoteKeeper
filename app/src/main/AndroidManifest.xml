@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NotelistActivity">
+        <activity android:name=".NotelistActivity"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
         <activity
