@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="favourite_social_media">
+        <item>Facebook</item>
+        <item>Gmail</item>
+        <item>Twitter</item>
+    </string-array>
+
+    <string-array name="favourite_social_values">
+        <item>https://www.facebook.com</item>
+        <item>https://mail.google.com</item>
+        <item>https://twitter.com/</item>
+    </string-array>
+</resources>
