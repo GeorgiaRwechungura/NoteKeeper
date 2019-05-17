@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.sql.SQLData;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity
     private LinearLayoutManager mNotesLinerLayoutManger;
     private GridLayoutManager mCourseLayoutManger;
     private CourseRecycleAdapter mCourseRecycleAdapter;
+    private NoteKeeperOpenHelper mDbOpenHelper;
+
 
 
     @SuppressLint("ResourceAsColor")
@@ -59,6 +63,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mDbOpenHelper= new NoteKeeperOpenHelper(this);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,13 +80,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-       /* ActionBar actionBar = getActionBar();
+      //Come back and fix the coulor of the toggle
 
-        //actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));*/
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-      //  drawer.setBackgroundColor(R.color.hamburgerWhite);
-               // drawer.getDrawer.setColor(getResources().getColor(R.color.hamburgerWhite);
 
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -89,6 +93,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onDestroy() {
+         mDbOpenHelper.close();
+        super.onDestroy();
+    }
 
     @Override
     protected void onPostResume() {
@@ -140,6 +149,8 @@ public class MainActivity extends AppCompatActivity
         mRecycleItems.setLayoutManager(mNotesLinerLayoutManger);
 
         mRecycleItems.setAdapter(noteRecycleAdapter);
+
+        SQLiteDatabase  db= mDbOpenHelper.getReadableDatabase();
         selectNavigationMenuItem(R.id.nav_notes);
 
     }
@@ -153,6 +164,7 @@ public class MainActivity extends AppCompatActivity
     private void displayCourses(){
         mRecycleItems.setLayoutManager(mCourseLayoutManger);
         mRecycleItems.setAdapter(mCourseRecycleAdapter);
+
         selectNavigationMenuItem(R.id.nav_courses);
     }
 

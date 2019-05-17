@@ -44,7 +44,8 @@
             android:key="user_favorite_social"
             android:title="@string/social_favourite_title"
             android:entries="@array/favourite_social_media"
-            android:entryValues="@array/favourite_social_values"/>
+            android:entryValues="@array/favourite_social_values"
+            android:defaultValue="https://www.facebook.com" />
     </PreferenceCategory>
 
 
