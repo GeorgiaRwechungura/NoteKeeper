@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initilizeDisplayContent() {
 
+       DataManager.loadFromDatabase(mDbOpenHelper);
 
         mRecycleItems = (RecyclerView) findViewById(R.id.list_items);
 
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
         mRecycleItems.setAdapter(noteRecycleAdapter);
 
-        SQLiteDatabase  db= mDbOpenHelper.getReadableDatabase();
+
         selectNavigationMenuItem(R.id.nav_notes);
 
     }
