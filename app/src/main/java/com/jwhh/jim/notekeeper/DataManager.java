@@ -3,11 +3,11 @@ package com.jwhh.jim.notekeeper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
+import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.*;
-import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry.TABLE_NAME;
 
 /**
  * Created by Jim.
@@ -22,74 +22,68 @@ public class DataManager {
     public static DataManager getInstance() {
         if(ourInstance == null) {
             ourInstance = new DataManager();
-           /* ourInstance.initializeCourses();
-            ourInstance.initializeExampleNotes();*/
+//            ourInstance.initializeCourses();
+//            ourInstance.initializeExampleNotes();
         }
         return ourInstance;
     }
-public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
-    SQLiteDatabase db=dbHelper.getReadableDatabase();
-    String[] courseColumns= {
-            CourseInfoEntry.COLUMN_COURSE_ID,
-            CourseInfoEntry.COLUMN_COURSE_TITLE };
 
-    Cursor courseCursor = db.query(TABLE_NAME,
-            courseColumns, null, null, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE +" DESC");
-        loadCoursesFromDatabases(courseCursor);
+    public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        final String[] courseColumns = {
+                CourseInfoEntry.COLUMN_COURSE_ID,
+                CourseInfoEntry.COLUMN_COURSE_TITLE};
+        final Cursor courseCursor = db.query(CourseInfoEntry.TABLE_NAME, courseColumns,
+                null, null, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE + " DESC");
+        loadCoursesFromDatabase(courseCursor);
 
-    String[] noteColumns = {
-            NoteInfoEntry.COLUMN_COURSE_ID,
-            NoteInfoEntry.COLUMN_NOTE_TEXT,
-            NoteInfoEntry.COLUMN_NOTE_TITLE};
-    String noteOrderBy= NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
-
-    Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME, noteColumns, null, null, null, null, noteOrderBy);
-    loadNotesFromDatabase(noteCursor);
-
-
-}
+        final String[] noteColumns = {
+                NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteInfoEntry.COLUMN_NOTE_TEXT,
+                NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteInfoEntry._ID};
+        String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+        final Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME, noteColumns,
+                null, null, null, null, noteOrderBy);
+        loadNotesFromDatabase(noteCursor);
+    }
 
     private static void loadNotesFromDatabase(Cursor cursor) {
+        int noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE);
+        int noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT);
+        int courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID);
+        int idPos = cursor.getColumnIndex(NoteInfoEntry._ID);
 
-        int noteTitlePos=cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE);
-        int noteTextPos=cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT);
-        int courseIdPos=cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID);
-
-        DataManager dm=DataManager.getInstance();
+        DataManager dm = getInstance();
         dm.mNotes.clear();
+        while(cursor.moveToNext()) {
+            String noteTitle = cursor.getString(noteTitlePos);
+            String noteText = cursor.getString(noteTextPos);
+            String courseId = cursor.getString(courseIdPos);
+            int id = cursor.getInt(idPos);
 
-        while(cursor.moveToNext()){
-
-            String noteTitle=cursor.getString(noteTitlePos);
-            String noteText=cursor.getString(noteTextPos);
-            String courseId=cursor.getString(courseIdPos);
-
-            CourseInfo noteCourse=dm.getCourse(courseId);
-
-            NoteInfo note= new NoteInfo(noteCourse,noteTitle,noteText);
+            CourseInfo noteCourse = dm.getCourse(courseId);
+            NoteInfo note = new NoteInfo(id, noteCourse, noteTitle, noteText);
             dm.mNotes.add(note);
         }
         cursor.close();
     }
 
-    private static void loadCoursesFromDatabases(Cursor cursor) {
-        int courseIdPos=cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
-        int courseTitlePos=cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE);
+    private static void loadCoursesFromDatabase(Cursor cursor) {
+        int courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
+        int courseTitlePos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE);
 
-         DataManager dm=DataManager.getInstance();
-         dm.mCourses.clear();
+        DataManager dm = getInstance();
+        dm.mCourses.clear();
+        while(cursor.moveToNext()) {
+            String courseId = cursor.getString(courseIdPos);
+            String courseTitle = cursor.getString(courseTitlePos);
+            CourseInfo course = new CourseInfo(courseId, courseTitle, null);
 
-         while (cursor.moveToNext()){
-             String courseId=cursor.getString(courseIdPos);
-             String courseTittle=cursor.getString(courseTitlePos);
-
-             CourseInfo course=new CourseInfo(courseId,courseTittle,null);
-             //Adding courses in the courses list
-              dm.mCourses.add(course);
-         }
-         cursor.close();
+            dm.mCourses.add(course);
+        }
+        cursor.close();
     }
-
 
     public String getCurrentUserName() {
         return "Jim Wilson";
@@ -104,9 +98,9 @@ public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
     }
 
     public int createNewNote() {
-        NoteInfo note = new NoteInfo(null, null, null);
+        NoteInfo note = new NoteInfo(null,null, null, null);
         mNotes.add(note);
-        return mNotes.size() -1;
+        return mNotes.size() - 1;
     }
 
     public int findNote(NoteInfo note) {
@@ -115,7 +109,7 @@ public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
                 return index;
         }
 
-        return 0;
+        return -1;
     }
 
     public void removeNote(int index) {
@@ -171,17 +165,17 @@ public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
         course.getModule("android_intents_m01").setComplete(true);
         course.getModule("android_intents_m02").setComplete(true);
         course.getModule("android_intents_m03").setComplete(true);
-        mNotes.add(new NoteInfo(course, "Dynamic intent resolution",
+        mNotes.add(new NoteInfo(1,course, "Dynamic intent resolution",
                 "Wow, intents allow components to be resolved at runtime"));
-        mNotes.add(new NoteInfo(course, "Delegating intents",
+        mNotes.add(new NoteInfo(1,course, "Delegating intents",
                 "PendingIntents are powerful; they delegate much more than just a component invocation"));
 
         course = dm.getCourse("android_async");
         course.getModule("android_async_m01").setComplete(true);
         course.getModule("android_async_m02").setComplete(true);
-        mNotes.add(new NoteInfo(course, "Service default threads",
+        mNotes.add(new NoteInfo(1,course, "Service default threads",
                 "Did you know that by default an Android Service will tie up the UI thread?"));
-        mNotes.add(new NoteInfo(course, "Long running operations",
+        mNotes.add(new NoteInfo(1,course, "Long running operations",
                 "Foreground Services can be tied to a notification icon"));
 
         course = dm.getCourse("java_lang");
@@ -192,18 +186,18 @@ public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
         course.getModule("java_lang_m05").setComplete(true);
         course.getModule("java_lang_m06").setComplete(true);
         course.getModule("java_lang_m07").setComplete(true);
-        mNotes.add(new NoteInfo(course, "Parameters",
+        mNotes.add(new NoteInfo(1,course, "Parameters",
                 "Leverage variable-length parameter lists"));
-        mNotes.add(new NoteInfo(course, "Anonymous classes",
+        mNotes.add(new NoteInfo(1,course, "Anonymous classes",
                 "Anonymous classes simplify implementing one-use types"));
 
         course = dm.getCourse("java_core");
         course.getModule("java_core_m01").setComplete(true);
         course.getModule("java_core_m02").setComplete(true);
         course.getModule("java_core_m03").setComplete(true);
-        mNotes.add(new NoteInfo(course, "Compiler options",
+        mNotes.add(new NoteInfo(1,course, "Compiler options",
                 "The -jar option isn't compatible with with the -cp option"));
-        mNotes.add(new NoteInfo(course, "Serialization",
+        mNotes.add(new NoteInfo(1,course, "Serialization",
                 "Remember to include SerialVersionUID to assure version compatibility"));
     }
 
@@ -263,19 +257,15 @@ public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper){
         return new CourseInfo("java_core", "Java Fundamentals: The Core Platform", modules);
     }
 
-    public int createNewNote(CourseInfo course, String noteTittle, String noteText) {
-
-        int index=createNewNote();
+    public int createNewNote(CourseInfo course, String noteTitle, String noteText) {
+        int index = createNewNote();
         NoteInfo note = getNotes().get(index);
-
         note.setCourse(course);
-        note.setTitle(noteTittle);
+        note.setTitle(noteTitle);
         note.setText(noteText);
-
 
         return index;
     }
-
     //endregion
 
 }

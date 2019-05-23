@@ -1,6 +1,7 @@
 package com.jwhh.jim.notekeeper;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 /*import android.support.design.widget.FloatingActionButton;
@@ -32,9 +33,7 @@ public class NotelistActivity extends AppCompatActivity {
           floatingActionButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                //   startActivity( new Intent(NotelistActivity.this,NoteActivity.class));
 
-                //  Toast.makeText(getApplicationContext(),"am here",Toast.LENGTH_LONG).show();
                   Intent intent=new Intent(NotelistActivity.this,NoteActivity.class);
                   startActivity(intent);
               }
@@ -60,7 +59,7 @@ public class NotelistActivity extends AppCompatActivity {
                    recycleNotes.setLayoutManager(notesLinerLayoutManger);
 
                    List<NoteInfo> notes=DataManager.getInstance().getNotes();
-                    noteRecycleAdapter = new NoteRecycleAdapter(this,notes);
+                    noteRecycleAdapter = new NoteRecycleAdapter(this, (Cursor) notes);
                     recycleNotes.setAdapter(noteRecycleAdapter);
                    // recycleNotes.notify();
     }
