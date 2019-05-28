@@ -26,11 +26,16 @@ import android.support.v7.widget.Toolbar;*/
 import android.view.Menu;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,10 +46,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import static com.jwhh.jim.notekeeper.NoteActivity.LOADER_NOTES;
 import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.*;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private NoteRecycleAdapter mNoteRecycleAdapter;
     private RecyclerView mRecycleItems;
@@ -102,9 +108,9 @@ public class MainActivity extends AppCompatActivity
     protected void onPostResume() {
         super.onPostResume();
 
-        //mAdapterInfo.notifyDataSetChanged();
+        getSupportLoaderManager().initLoader(LOADER_NOTES,null,this);
 
-        loadNotes();
+         //TODO  //Came back to this method and make updateNavHeader(): it work
         //updateNavHeader();
     }
 
@@ -260,6 +266,50 @@ public class MainActivity extends AppCompatActivity
 
         View view=findViewById(R.id.list_items);
         Snackbar.make(view,message_id,Snackbar.LENGTH_LONG).show();
+
+    }
+
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+
+        CursorLoader loader=null;
+            if(id==LOADER_NOTES){
+                loader=new CursorLoader(this){
+                    @Override
+                    public Cursor loadInBackground() {
+
+                        SQLiteDatabase db=mDbOpenHelper.getReadableDatabase();
+                        String noteOrderBy= NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+
+
+                        String noteColums[]={
+                                NoteInfoEntry.COLUMN_COURSE_ID,
+                                NoteInfoEntry.COLUMN_NOTE_TITLE,
+                                NoteInfoEntry.COLUMN_NOTE_TEXT,
+                                NoteInfoEntry._ID
+                        };
+
+                        return db.query(NoteInfoEntry.TABLE_NAME,noteColums,null,null,null,null,noteOrderBy);
+
+                    }
+                };
+            }
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        if(loader.getId()==LOADER_NOTES){
+            mNoteRecycleAdapter.changeCursor(data);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mNoteRecycleAdapter.changeCursor(null);
 
     }
 }
