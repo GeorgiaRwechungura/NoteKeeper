@@ -312,10 +312,10 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
     private void saveNote() {
-        mNote.setCourse((CourseInfo)mSpinnerCourses.getSelectedItem());
+    /*    mNote.setCourse((CourseInfo)mSpinnerCourses.getSelectedItem());
         mNote.setText(mEditTittle.getText().toString());
         mNote.setTitle(mEditText.getText().toString());
-
+*/
     }
 
     private void sendEmail() {
