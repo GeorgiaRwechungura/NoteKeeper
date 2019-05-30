@@ -1,8 +1,10 @@
 package com.jwhh.jim.notekeeper;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.os.PersistableBundle;
@@ -92,7 +94,8 @@ public class NoteActivity extends AppCompatActivity implements
 
             readDisplayStateValues();
             if(savedInstanceState==null){
-                saveOriginalNoteValues();
+                //TODO, cam back to this and make it work
+                //saveOriginalNoteValues();
 
             }else{
                 rstoreOriginalNoteValues(savedInstanceState);
@@ -158,14 +161,18 @@ public class NoteActivity extends AppCompatActivity implements
 
     }
 
+    //TODO came back to this and make it work
+/*
     private void saveOriginalNoteValues() {
         if(mIsNewNote){
             return;
         }
-       /* mOriginalNoteCourseId = Integer.toString(mNoteId);//.getCourse().getCourseId();
+       mOriginalNoteCourseId =  mNote.getCourse().getCourseId();
         mOriginalTittle = mNote.getTitle();
-        mOriginalTetxt = mNote.getText();*/
-    }
+        mOriginalTetxt = mNote.getText();
+
+
+    }*/
 
 
     private void readDisplayStateValues() {
@@ -184,9 +191,23 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
     private void createNewNote() {
-        DataManager dm= DataManager.getInstance();
-        mNoteId = dm.createNewNote();
-        mNote=dm.getNotes().get(mNoteId);
+        final ContentValues values=new ContentValues();
+        values.put(NoteInfoEntry.COLUMN_COURSE_ID,"");
+        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE,"");
+        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT,"");
+
+        AsyncTask task=new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+
+                SQLiteDatabase db= mDbOpenHelper.getReadableDatabase();
+                mNoteId=(int) db.insert(NoteInfoEntry.TABLE_NAME,null,values);
+                return null;
+            }
+        };
+
+
+
     }
 
     private void displayNote() {
@@ -194,8 +215,7 @@ public class NoteActivity extends AppCompatActivity implements
         String noteTitle=mNoteCursor.getString(mNoteTitlePos);
         String noteText=mNoteCursor.getString(mNoteTextPos);
 
-
-            int coursesIndex= getIndexOfCourseId(courseId);
+        int coursesIndex= getIndexOfCourseId(courseId);
 
         mSpinnerCourses.setSelection(coursesIndex);
 
@@ -271,7 +291,8 @@ public class NoteActivity extends AppCompatActivity implements
         ++mNoteId;
         mNote=DataManager.getInstance().getNotes().get(mNoteId);
 
-        saveOriginalNoteValues();
+//TODO came back and make this work
+      //  saveOriginalNoteValues();
         displayNote();
         invalidateOptionsMenu();
     }
@@ -282,7 +303,7 @@ public class NoteActivity extends AppCompatActivity implements
 
         if(isCancelling){
              if(mIsNewNote){
-                 DataManager.getInstance().removeNote(mNoteId);
+                deleteNoteFromDatabase();
              }else {
                  storePreviusNoteValue();
              }
@@ -296,27 +317,85 @@ public class NoteActivity extends AppCompatActivity implements
 
     }
 
+    private void deleteNoteFromDatabase() {
+
+        final String selection=NoteInfoEntry._ID + " = ? ";
+        final String selectionArgs[]={Integer.toString(mNoteId)};
+
+        AsyncTask task=new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+
+                SQLiteDatabase db=mDbOpenHelper.getWritableDatabase();
+                db.delete(NoteInfoEntry.TABLE_NAME,selection,selectionArgs);
+                return null;
+            }
+        };
+          task.execute();
+
+    }
+
     private void storePreviusNoteValue() {
         CourseInfo course=DataManager.getInstance().getCourse(mOriginalNoteCourseId);
         mNote.setCourse(course);
         mNote.setTitle(mOriginalTittle);
         mNote.setText(mOriginalTetxt);
-    }
 
-    @Override
+    }
+    //TODO  came back and fix this,make the app work properly
+   /* @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putString(ORIGINAL_NOTE_COURSE_ID,mOriginalNoteCourseId);
         outState.putString(ORIGINAL_NOTE_COURSE_TITTLE,mOriginalTittle);
         outState.putString(ORIGINAL_NOTE_COURSE_TEXT,mOriginalTetxt);
-    }
+    }*/
 
     private void saveNote() {
-    /*    mNote.setCourse((CourseInfo)mSpinnerCourses.getSelectedItem());
-        mNote.setText(mEditTittle.getText().toString());
-        mNote.setTitle(mEditText.getText().toString());
-*/
+        String courseId=selectedCourseId();
+      String noteTitle=  mEditTittle.getText().toString();
+      String noteText=  mEditText.getText().toString();
+      saveNoteToDataBase(courseId,noteTitle,noteText);
+
     }
+
+    private String selectedCourseId() {
+
+    int selectedPosition=mSpinnerCourses.getSelectedItemPosition();
+    Cursor cursor= mAdapterCoures.getCursor();
+    cursor.moveToPosition(selectedPosition);
+    int courseIdPos=cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
+    String courseId=cursor.getString(courseIdPos);
+
+    return courseId;
+    }
+
+    private void saveNoteToDataBase(String courseId,String noteTitle,  String noteText ){
+        final String selection=NoteInfoEntry._ID + " = ? ";
+        final String selectionArgs[]={Integer.toString(mNoteId)};
+
+        final ContentValues values=new ContentValues();
+        values.put(NoteInfoEntry.COLUMN_COURSE_ID,courseId);
+        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE,noteTitle);
+        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT,noteText);
+
+        AsyncTask task=new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+
+                SQLiteDatabase db= mDbOpenHelper.getWritableDatabase();
+                db.update(NoteInfoEntry.TABLE_NAME,values,selection,selectionArgs);
+
+                return null;
+            }
+
+        };
+        task.execute();
+
+
+
+    }
+
 
     private void sendEmail() {
 
