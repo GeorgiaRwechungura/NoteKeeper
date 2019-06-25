@@ -44,6 +44,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.jwhh.jim.notekeeper.NoteActivity.LOADER_NOTES;
@@ -102,16 +103,18 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
          mDbOpenHelper.close();
         super.onDestroy();
+
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
 
+
         getSupportLoaderManager().restartLoader(LOADER_NOTES,null,this);
 
          //TODO  //Came back to this method and make updateNavHeader(): it work
-        //updateNavHeader();
+        updateNavHeader();
     }
 
     private void loadNotes() {
@@ -131,11 +134,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
     private void updateNavHeader() {
         NavigationView navigationView=findViewById(R.id.nav_view);
         View headerView=navigationView.getHeaderView(0);
-        TextView usernaTextView=findViewById(R.id.text_user_name);
-        TextView emailAdressTextView=findViewById(R.id.text_email_adress);
+        TextView usernaTextView=headerView.findViewById(R.id.text_user_name);
+        TextView emailAdressTextView=headerView.findViewById(R.id.text_email_adress);
 
 
         SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(this);
@@ -155,12 +159,12 @@ public class MainActivity extends AppCompatActivity
 
         mNotesLinerLayoutManger = new LinearLayoutManager(this);
         mCourseLayoutManger = new GridLayoutManager(this,getResources().getInteger(R.integer.course_grid_span));
-
+        List<CourseInfo> courses = new ArrayList<>();
 
         mNoteRecycleAdapter = new NoteRecycleAdapter(this,null);
-
-        List<CourseInfo> courses= DataManager.getInstance().getCourses();
+        courses= DataManager.getInstance().getCourses();
         mCourseRecycleAdapter = new CourseRecycleAdapter(this,courses);
+
            displayNotes();
 
         // recycleNotes.notify();
@@ -297,8 +301,6 @@ public class MainActivity extends AppCompatActivity
                                 CourseInfoEntry.TABLE_NAME + " ON " +
                                 NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + " = " +
                                 CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID);
-
-
 
 
                         return db.query(tablesWithJoin,noteColums,null,null,null,null,noteOrderBy);

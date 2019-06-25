@@ -44,8 +44,8 @@ public class NoteRecycleAdapter extends RecyclerView.Adapter<NoteRecycleAdapter.
     }
 
     public void changeCursor(Cursor cursor) {
-        if(mCursor != null)
-            mCursor.close();
+       /*if(mCursor != null)
+           mCursor.close();*/
         mCursor = cursor;
         populateColumnPositions();
         notifyDataSetChanged();

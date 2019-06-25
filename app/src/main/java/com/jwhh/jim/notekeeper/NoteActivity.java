@@ -95,7 +95,7 @@ public class NoteActivity extends AppCompatActivity implements
             readDisplayStateValues();
             if(savedInstanceState==null){
                 //TODO, cam back to this and make it work
-                //saveOriginalNoteValues();
+               // saveOriginalNoteValues();
 
             }else{
                 rstoreOriginalNoteValues(savedInstanceState);
@@ -162,7 +162,7 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
     //TODO came back to this and make it work
-/*
+
     private void saveOriginalNoteValues() {
         if(mIsNewNote){
             return;
@@ -172,7 +172,7 @@ public class NoteActivity extends AppCompatActivity implements
         mOriginalTetxt = mNote.getText();
 
 
-    }*/
+    }
 
 
     private void readDisplayStateValues() {
@@ -352,6 +352,7 @@ public class NoteActivity extends AppCompatActivity implements
     }*/
 
     private void saveNote() {
+
         String courseId=selectedCourseId();
       String noteTitle=  mEditTittle.getText().toString();
       String noteText=  mEditText.getText().toString();
