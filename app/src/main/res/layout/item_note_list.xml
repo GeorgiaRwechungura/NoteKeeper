@@ -72,7 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_assignment_black_24dp"
-                tools:ignore="VectorDrawableCompat" />
+                tools:ignore="UnknownId,VectorDrawableCompat" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

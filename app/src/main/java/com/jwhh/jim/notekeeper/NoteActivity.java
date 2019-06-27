@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -434,20 +435,15 @@ else if(id==LOADER_COURSES)
     private CursorLoader createLoaderCourses() {
         mCourseQueryFinished = false;
 
-        return new CursorLoader(this){
-            @Override
-            public Cursor loadInBackground() {
+        Uri uri=Uri.parse("content://com.jwhh.jim.notekeeper.provider");
 
-                SQLiteDatabase db=mDbOpenHelper.getReadableDatabase();
-
-                String courseColumns[]={CourseInfoEntry.COLUMN_COURSE_TITLE,
-                        CourseInfoEntry.COLUMN_COURSE_ID,
-                        CourseInfoEntry._ID};
-
-                return  db.query(CourseInfoEntry.TABLE_NAME,courseColumns,null,null,
-                        null,null,CourseInfoEntry.COLUMN_COURSE_TITLE);
-            }
+        String courseColumns[]={CourseInfoEntry.COLUMN_COURSE_TITLE,
+                CourseInfoEntry.COLUMN_COURSE_ID,
+                CourseInfoEntry._ID
         };
+
+         return new CursorLoader(this, uri,courseColumns,null,null,CourseInfoEntry.COLUMN_COURSE_TITLE);
+
     }
 
     private CursorLoader createLoaderNote() {

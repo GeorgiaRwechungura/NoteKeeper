@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     private CourseRecycleAdapter mCourseRecycleAdapter;
     private NoteKeeperOpenHelper mDbOpenHelper;
 
-
+    List<CourseInfo> courses = new ArrayList<>();
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         mDbOpenHelper= new NoteKeeperOpenHelper(this);
+
+        mCourseRecycleAdapter = new CourseRecycleAdapter(this,courses);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -159,12 +161,11 @@ public class MainActivity extends AppCompatActivity
 
         mNotesLinerLayoutManger = new LinearLayoutManager(this);
         mCourseLayoutManger = new GridLayoutManager(this,getResources().getInteger(R.integer.course_grid_span));
-        List<CourseInfo> courses = new ArrayList<>();
+
 
         mNoteRecycleAdapter = new NoteRecycleAdapter(this,null);
-        courses= DataManager.getInstance().getCourses();
-        mCourseRecycleAdapter = new CourseRecycleAdapter(this,courses);
 
+        courses= DataManager.getInstance().getCourses();
            displayNotes();
 
         // recycleNotes.notify();
