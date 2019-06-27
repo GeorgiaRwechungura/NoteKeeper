@@ -32,6 +32,7 @@ import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 import java.util.List;
 
 import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.*;
+import static com.jwhh.jim.notekeeper.NoteKeeperProviderContract.*;
 
 public class NoteActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -435,14 +436,15 @@ else if(id==LOADER_COURSES)
     private CursorLoader createLoaderCourses() {
         mCourseQueryFinished = false;
 
-        Uri uri=Uri.parse("content://com.jwhh.jim.notekeeper.provider");
+        Uri uri= Courses.CONTENT_URI;
 
-        String courseColumns[]={CourseInfoEntry.COLUMN_COURSE_TITLE,
-                CourseInfoEntry.COLUMN_COURSE_ID,
-                CourseInfoEntry._ID
+        String courseColumns[]={
+                Courses.COLUMN_COURSE_TITLE,
+                Courses.COLUMN_COURSE_ID,
+                Courses._ID
         };
 
-         return new CursorLoader(this, uri,courseColumns,null,null,CourseInfoEntry.COLUMN_COURSE_TITLE);
+         return new CursorLoader(this, uri,courseColumns,null,null,Courses.COLUMN_COURSE_TITLE);
 
     }
 
