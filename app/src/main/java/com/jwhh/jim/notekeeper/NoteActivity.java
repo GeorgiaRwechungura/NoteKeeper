@@ -1,5 +1,6 @@
 package com.jwhh.jim.notekeeper;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,6 +31,8 @@ import androidx.loader.content.Loader;
 import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
 import java.util.List;
+
+import georgia.com.Notekeeper.NoteReminderNotification;
 
 import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.*;
 import static com.jwhh.jim.notekeeper.NoteKeeperProviderContract.*;
@@ -64,6 +67,7 @@ public class NoteActivity extends AppCompatActivity implements
     private SimpleCursorAdapter mAdapterCoures;
     private boolean mCourseQueryFinished;
     private boolean mNoteQuerryFinished;
+    private Uri mNoteUri;
 
     @Override
     protected void onDestroy() {
@@ -194,21 +198,11 @@ public class NoteActivity extends AppCompatActivity implements
 
     private void createNewNote() {
         final ContentValues values=new ContentValues();
-        values.put(NoteInfoEntry.COLUMN_COURSE_ID,"");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE,"");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT,"");
+        values.put(Notes.COLUMN_COURSE_ID,"");
+        values.put(Notes.COLUMN_NOTE_TITLE,"");
+        values.put(Notes.COLUMN_NOTE_TEXT,"");
 
-        AsyncTask task=new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] objects) {
-
-                SQLiteDatabase db= mDbOpenHelper.getReadableDatabase();
-                mNoteId=(int) db.insert(NoteInfoEntry.TABLE_NAME,null,values);
-                return null;
-            }
-        };
-
-
+          mNoteUri = getContentResolver().insert(Notes.CONTENT_URI,values);
 
     }
 
@@ -273,8 +267,16 @@ public class NoteActivity extends AppCompatActivity implements
             moveNext();
 
         }
+        else if(id==R.id.action_set_reminder){
+            showReMinderNotification();
+
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showReMinderNotification() {
+        NoteReminderNotification.notify(this,"This is dummy text",0);
     }
 
     @Override
@@ -450,27 +452,21 @@ else if(id==LOADER_COURSES)
 
     private CursorLoader createLoaderNote() {
         mNoteQuerryFinished = false;
+        String noteColums[]={
+                Notes.COLUMN_COURSE_ID,
+                Notes.COLUMN_NOTE_TITLE,
+                Notes.COLUMN_NOTE_TEXT
 
-        return new CursorLoader(this){
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db=mDbOpenHelper.getReadableDatabase();
+        };
+      mNoteUri= ContentUris.withAppendedId(Notes.CONTENT_URI,mNoteId);
 
-                String selection= NoteInfoEntry._ID + " = ? ";
+      return new CursorLoader(this,mNoteUri,noteColums,null,null,null);
 
-                String selectionArgs[]={Integer.toString(mNoteId)};
 
-                String noteColums[]={
-                        NoteInfoEntry.COLUMN_COURSE_ID,
-                        NoteInfoEntry.COLUMN_NOTE_TITLE,
-                        NoteInfoEntry.COLUMN_NOTE_TEXT
-
-                };
-                return db.query(NoteInfoEntry.TABLE_NAME,noteColums,selection,selectionArgs,null,null,null);
 
             }
-        };
-    }
+
+
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
