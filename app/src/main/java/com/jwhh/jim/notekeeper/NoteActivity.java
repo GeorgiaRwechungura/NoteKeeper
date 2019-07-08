@@ -1,12 +1,17 @@
 package com.jwhh.jim.notekeeper;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.PersistableBundle;
@@ -24,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -32,7 +38,7 @@ import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
 import java.util.List;
 
-import georgia.com.Notekeeper.NoteReminderNotification;
+
 
 import static com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.*;
 import static com.jwhh.jim.notekeeper.NoteKeeperProviderContract.*;
@@ -276,8 +282,16 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
     private void showReMinderNotification() {
-        NoteReminderNotification.notify(this,"This is dummy text",0);
-    }
+        String noteText=mEditText.getText().toString();
+        String noteTitle=mEditText.getText().toString();
+        int noteId= (int) ContentUris.parseId(mNoteUri);
+
+            NoteReminderNotification.notify(this,noteTitle,noteText,noteId);
+
+        }
+
+
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
