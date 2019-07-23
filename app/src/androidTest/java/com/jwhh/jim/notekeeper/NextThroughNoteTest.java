@@ -1,5 +1,7 @@
 package com.jwhh.jim.notekeeper;
 
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 

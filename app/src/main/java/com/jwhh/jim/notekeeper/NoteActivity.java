@@ -18,10 +18,13 @@ import android.os.PersistableBundle;
 /*import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;*/
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
@@ -34,6 +37,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jwhh.jim.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
 import java.util.List;
@@ -194,7 +198,7 @@ public class NoteActivity extends AppCompatActivity implements
                   mNoteId =intent.getIntExtra(NOTE_ID, ID_NOT_SET);//intent.getExtras().getParcelable("NOTE")
                    mIsNewNote = mNoteId == ID_NOT_SET;
                    if(mIsNewNote){
-                       
+
                        createNewNote();
 
                    } /*else {
@@ -203,13 +207,75 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
     private void createNewNote() {
+
+        AsyncTask<ContentValues, Integer, Uri> task = new AsyncTask<ContentValues, Integer, Uri>() {
+            private ProgressBar progressBar;
+
+            @Override
+            protected void onPreExecute() {
+                progressBar=findViewById(R.id.progressBar);
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setProgress(1);
+            }
+
+            @Override
+            protected Uri doInBackground(ContentValues... params) {
+
+                Log.d(" TAG", "Doing inBackground -thread " + Thread.currentThread().getId());
+                ContentValues insertValues = params[0];
+                Uri rowUri = getContentResolver().insert(Notes.CONTENT_URI, insertValues);
+                publishProgress(2);
+                simulatingLongRunningWork();
+
+
+
+               simulatingLongRunningWork();
+               publishProgress(3);
+
+                return rowUri;
+
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                int progressValue=values[0];
+                progressBar.setProgress(progressValue);
+            }
+
+            @Override
+            protected void onPostExecute(Uri uri) {
+
+                Log.d(" TAG", "onPostExecute -thread " + Thread.currentThread().getId());
+                mNoteUri = uri;
+                displaySnackBar(mNoteUri.toString());
+                progressBar.setVisibility(View.GONE);
+
+            }
+        };
+
+
+
         final ContentValues values=new ContentValues();
         values.put(Notes.COLUMN_COURSE_ID,"");
         values.put(Notes.COLUMN_NOTE_TITLE,"");
         values.put(Notes.COLUMN_NOTE_TEXT,"");
 
-          mNoteUri = getContentResolver().insert(Notes.CONTENT_URI,values);
+        Log.d(" TAG", "Call to excute -thread " + Thread.currentThread().getId());
+        task.execute(values);
 
+    }
+
+    private void simulatingLongRunningWork() {
+
+        try {
+            Thread.sleep(2000);
+        } catch(Exception ex) {}
+    }
+
+    private void displaySnackBar(String message) {
+
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     private void displayNote() {

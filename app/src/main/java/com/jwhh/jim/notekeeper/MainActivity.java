@@ -5,13 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 /*import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;*/
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.View;
 /*import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;*/
@@ -70,6 +73,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        
+        //enableStrictMode();
 
         mDbOpenHelper= new NoteKeeperOpenHelper(this);
 
@@ -102,6 +107,20 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+  /* private void enableStrictMode() {
+     if(BuildConfig.DEBUG) {
+        // if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy =
+                  new StrictMode.ThreadPolicy.Builder().detectAll()
+                          .penaltyDialog()
+                          .build();
+
+          StrictMode.setThreadPolicy(policy);
+     // }
+  }
+    }
+*/
+
     @Override
     protected void onDestroy() {
          mDbOpenHelper.close();
@@ -118,6 +137,15 @@ public class MainActivity extends AppCompatActivity
 
          //TODO  //Came back to this method and make updateNavHeader(): it work
         updateNavHeader();
+
+        openDrawer();
+    }
+
+    @SuppressLint("WrongConstant")
+    private void openDrawer() {
+
+        DrawerLayout drawerLayout=findViewById(R.id.drawer_layout);
+        drawerLayout.openDrawer(Gravity.START);
     }
 
     private void loadNotes() {
