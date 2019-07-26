@@ -12,6 +12,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;*/
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -144,8 +146,18 @@ public class MainActivity extends AppCompatActivity
     @SuppressLint("WrongConstant")
     private void openDrawer() {
 
-        DrawerLayout drawerLayout=findViewById(R.id.drawer_layout);
-        drawerLayout.openDrawer(Gravity.START);
+        Handler handler=new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                DrawerLayout drawerLayout=findViewById(R.id.drawer_layout);
+                drawerLayout.openDrawer(Gravity.START);
+
+            }
+        },1000);
+
+
     }
 
     private void loadNotes() {
@@ -254,8 +266,18 @@ public class MainActivity extends AppCompatActivity
             Intent intent=new Intent(getApplicationContext(),SettingsActivity.class);
             startActivity(intent);
         }
+        if(id==R.id.action_backup_notes){
+
+            backupNotes();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void backupNotes() {
+      Intent intent=new Intent(this,NoteBackup.class);
+      intent.putExtra(NoteServiceBackup.EXTRA_COURSE_ID,NoteBackup.ALL_COURSES);
+      startService(intent);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

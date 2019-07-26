@@ -32,6 +32,7 @@ public class NoteReminderNotification {
     private static final String NOTIFICATION_TAG = "NoteReminder";
     private static NotificationCompat.Builder builder;
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
+
     /**
      * Shows the notification, or updates a previously shown notification of
      * this type, with the given parameters.
@@ -46,7 +47,12 @@ public class NoteReminderNotification {
      * Notification design guidelines</a> when doing so.
      *
      * @see #cancel(Context)
+     *
+     *
+     *
      */
+
+
     public static void notify(final Context context,final String noteTitle,
                               final String noteText,int noteId) {
         final Resources res = context.getResources();
@@ -57,6 +63,10 @@ public class NoteReminderNotification {
 
         Intent noteActivityIntent=new Intent(context,NoteActivity.class);
                noteActivityIntent.putExtra(NoteActivity.NOTE_ID,noteId);
+
+               Intent backupServiceIntent=new Intent(context,NoteServiceBackup.class);
+               backupServiceIntent.putExtra(NoteServiceBackup.EXTRA_COURSE_ID,NoteBackup.ALL_COURSES);
+
 
         builder = new NotificationCompat.Builder(context)
 
@@ -116,7 +126,7 @@ public class NoteReminderNotification {
                 // should ensure that the activity in this notification's
                 // content intent provides access to the same actions in
                 // another way.
-                .addAction(
+               /* .addAction(
                         R.drawable.ic_action_stat_share,
                         res.getString(R.string.action_share),
                         PendingIntent.getActivity(
@@ -125,11 +135,8 @@ public class NoteReminderNotification {
                                 Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                         .setType("text/plain")
                                         .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
-                .addAction(
-                        R.drawable.ic_action_stat_reply,
-                        res.getString(R.string.action_reply),
-                        null)
+                                PendingIntent.FLAG_UPDATE_CURRENT))*/
+
                 .addAction(0,
                         "View all notes",
                         PendingIntent.getActivity(
@@ -139,11 +146,22 @@ public class NoteReminderNotification {
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         ))
 
+
+                .addAction(0,
+                        "Backup Notes",
+                        PendingIntent.getService(
+                                context,
+                                0,
+                                 backupServiceIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+
+                        ))
                 // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(true);
 
         notify(context, builder.build());
     }
+
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static void notify(final Context context, final Notification notification) {
@@ -167,13 +185,11 @@ public class NoteReminderNotification {
         else {
             nm.notify(NOTIFICATION_TAG.hashCode(), notification);
         }
-    }
 
-    /**
-     * Cancels any notifications of this type previously shown using
-     * {@link #notify(Context, String, int)}.
-     */
+        notify(context, builder.build());
+    }
     @TargetApi(Build.VERSION_CODES.ECLAIR)
+
     public static void cancel(final Context context) {
         final NotificationManager nm = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);

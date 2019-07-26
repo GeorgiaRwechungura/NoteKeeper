@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">NoteKeeper</string>
     <string name="action_settings">Setting</string>
+    <string name="action_backup_notes">Back Up Notes</string>
     <string name="action_set_reminder">Set Reminder</string>
     <string name="tittle_activity_note">Edit Note</string>
     <string name="title_activity_main">NoteKeeper</string>
