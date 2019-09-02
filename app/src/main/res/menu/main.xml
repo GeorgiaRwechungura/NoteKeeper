@@ -8,6 +8,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_upload_notes"
+        android:orderInCategory="101"
+        android:title="@string/action_upload_notes"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_backup_notes"
         android:orderInCategory="101"
         android:title="@string/action_backup_notes"

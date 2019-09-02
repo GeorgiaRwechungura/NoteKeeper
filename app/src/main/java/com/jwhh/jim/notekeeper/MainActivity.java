@@ -1,6 +1,9 @@
 package com.jwhh.jim.notekeeper;
 
 import android.annotation.SuppressLint;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;*/
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -59,6 +63,7 @@ import static com.jwhh.jim.notekeeper.NoteKeeperProviderContract.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int NOTE_UPLODER_JOB_ID = 1;
     private NoteRecycleAdapter mNoteRecycleAdapter;
     private RecyclerView mRecycleItems;
     private LinearLayoutManager mNotesLinerLayoutManger;
@@ -270,8 +275,32 @@ public class MainActivity extends AppCompatActivity
 
             backupNotes();
         }
+        if(id==R.id.action_upload_notes){
+            scheduleNoteUpload();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void scheduleNoteUpload() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            PersistableBundle extra= new PersistableBundle();
+            extra.putString(NoteUploaderJobService.EXTRA_DATA_URI,Notes.CONTENT_URI.toString());
+
+
+        ComponentName componentName=new ComponentName(this,NoteUploaderJobService.class);
+
+            JobInfo jobInfo=new JobInfo.Builder(NOTE_UPLODER_JOB_ID,componentName)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setExtras(extra)
+                    .build();
+
+            JobScheduler jobScheduler= (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+
+             jobScheduler.schedule(jobInfo);
+
+        }
+
     }
 
     private void backupNotes() {

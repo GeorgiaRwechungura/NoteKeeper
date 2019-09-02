@@ -47,7 +47,7 @@
             android:name=".NoteUploaderJobService"
             android:enabled="true"
             android:exported="false"
-            android:permission="android.permission.BIND.JOB_SERVICE">
+            android:permission="android.permission.BIND_JOB_SERVICE">
 
         </service>
     </application>
