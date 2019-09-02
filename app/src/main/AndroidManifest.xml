@@ -2,24 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jwhh.jim.notekeeper">
 
-    <uses-permission android:name="android.permission.VIBRATE" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service
-            android:name=".NoteServiceBackup"
-            android:exported="false"></service>
-
-        <provider
-            android:name=".NotekeeperProvider"
-            android:authorities="com.jwhh.jim.notekeeper.provider"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -38,13 +26,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".NotelistActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".NoteActivity"
             android:label="@string/tittle_activity_note"
             android:theme="@style/AppTheme.NoActionBar" />
+        <provider
+            android:name=".NotekeeperProvider"
+            android:authorities="com.jwhh.jim.notekeeper.provider"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".NoteServiceBackup"
+            android:exported="false" />
+        <service
+            android:name=".NoteUploaderJobService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND.JOB_SERVICE">
+
+        </service>
     </application>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>
