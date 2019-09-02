@@ -1,7 +1,5 @@
 package com.jwhh.jim.notekeeper;
 
-
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -18,6 +16,7 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+
 /**
  * Helper class for showing and canceling note reminder
  * notifications.
@@ -26,12 +25,14 @@ import androidx.core.app.NotificationCompat;
  * class to create notifications in a backward-compatible way.
  */
 public class NoteReminderNotification {
+
+
+    public static final String NOTIFICATION_CHANNEL_ID = "10001";
     /**
      * The unique identifier for this type of notification.
      */
     private static final String NOTIFICATION_TAG = "NoteReminder";
     private static NotificationCompat.Builder builder;
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
 
     /**
      * Shows the notification, or updates a previously shown notification of
@@ -47,26 +48,21 @@ public class NoteReminderNotification {
      * Notification design guidelines</a> when doing so.
      *
      * @see #cancel(Context)
-     *
-     *
-     *
      */
-
-
-    public static void notify(final Context context,final String noteTitle,
-                              final String noteText,int noteId) {
+    public static void notify(final Context context,
+                              final String noteTitle, final String noteText, int noteId) {
         final Resources res = context.getResources();
 
         // This image is used as the notification's large icon (thumbnail).
         // TODO: Remove this if your notification has no relevant thumbnail.
         final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.logo);
 
-        Intent noteActivityIntent=new Intent(context,NoteActivity.class);
-               noteActivityIntent.putExtra(NoteActivity.NOTE_ID,noteId);
+        Intent noteActivityIntent = new Intent(context, NoteActivity.class);
+        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
 
-               Intent backupServiceIntent=new Intent(context,NoteServiceBackup.class);
-               backupServiceIntent.putExtra(NoteServiceBackup.EXTRA_COURSE_ID,NoteBackup.ALL_COURSES);
 
+        Intent backupServiceIntent = new Intent(context, NoteServiceBackup.class);
+        backupServiceIntent.putExtra(NoteServiceBackup.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
 
         builder = new NotificationCompat.Builder(context)
 
@@ -77,7 +73,7 @@ public class NoteReminderNotification {
                 // Set required fields, including the small icon, the
                 // notification title, and text.
                 .setSmallIcon(R.drawable.ic_stat_note_reminder)
-                .setContentTitle("Review Note")
+                .setContentTitle("Review note")
                 .setContentText(noteText)
 
                 // All fields below this line are optional.
@@ -91,17 +87,12 @@ public class NoteReminderNotification {
                 .setLargeIcon(picture)
 
                 // Set ticker text (preview) information for this notification.
-                .setTicker("Review Note")
+                .setTicker("Review note")
+
                 .setStyle(new NotificationCompat.BigTextStyle()
-                       .bigText(noteText)
-                       .setBigContentTitle(noteTitle)
-                       .setSummaryText("Review Text"))
-
-
-
-                // Show a number. This is useful when stacking notifications of
-                // a single type.
-               // .setNumber(number)
+                        .bigText(noteText)
+                        .setBigContentTitle(noteTitle)
+                        .setSummaryText("Review note"))
 
                 // If this notification relates to a past or upcoming event, you
                 // should set the relevant time information using the setWhen
@@ -118,55 +109,39 @@ public class NoteReminderNotification {
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                              noteActivityIntent,
+                                noteActivityIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT))
 
-                // Example additional actions for this notification. These will
-                // only show on devices running Android 4.1 or later, so you
-                // should ensure that the activity in this notification's
-                // content intent provides access to the same actions in
-                // another way.
-               /* .addAction(
-                        R.drawable.ic_action_stat_share,
-                        res.getString(R.string.action_share),
-                        PendingIntent.getActivity(
-                                context,
-                                0,
-                                Intent.createChooser(new Intent(Intent.ACTION_SEND)
-                                        .setType("text/plain")
-                                        .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
-                                PendingIntent.FLAG_UPDATE_CURRENT))*/
-
-                .addAction(0,
+                .addAction(
+                        0,
                         "View all notes",
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                                new Intent(context,MainActivity.class),
-                                PendingIntent.FLAG_UPDATE_CURRENT
-                        ))
+                                new Intent(context, MainActivity.class),
+                                PendingIntent.FLAG_UPDATE_CURRENT))
 
-
-                .addAction(0,
-                        "Backup Notes",
+                .addAction(
+                        0,
+                        "Backup notes",
                         PendingIntent.getService(
                                 context,
                                 0,
-                                 backupServiceIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT
+                                backupServiceIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT))
 
-                        ))
                 // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(true);
 
         notify(context, builder.build());
     }
 
-
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
+   // @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static void notify(final Context context, final Notification notification) {
+
         final NotificationManager nm = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
             nm.notify(NOTIFICATION_TAG, 0, notification);
         }
@@ -186,10 +161,10 @@ public class NoteReminderNotification {
             nm.notify(NOTIFICATION_TAG.hashCode(), notification);
         }
 
-        notify(context, builder.build());
+      //  notify(context, builder.build());
     }
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
 
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     public static void cancel(final Context context) {
         final NotificationManager nm = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);

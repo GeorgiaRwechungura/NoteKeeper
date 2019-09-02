@@ -213,7 +213,7 @@ public class NoteActivity extends AppCompatActivity implements
 
             @Override
             protected void onPreExecute() {
-                progressBar=findViewById(R.id.progressBar);
+                progressBar=findViewById(R.id.progress_bar);
                 progressBar.setVisibility(View.VISIBLE);
                 progressBar.setProgress(1);
             }

@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-  /* private void enableStrictMode() {
+  private void enableStrictMode() {
      if(BuildConfig.DEBUG) {
         // if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy =
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
      // }
   }
     }
-*/
+
 
     @Override
     protected void onDestroy() {
