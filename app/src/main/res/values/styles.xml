@@ -1,4 +1,4 @@
-<resources xmlns:parent="http://schemas.android.com/apk/res-auto">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:parent="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
@@ -7,6 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="drawerArrowStyle" tools:ignore="DuplicateDefinition">@style/DrawerIcon</item>
+
+
 
 
     </style>
@@ -17,7 +20,10 @@
 
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="Theme.AppCompat.Light" />
+    <style name="AppTheme.AppBarOverlay" parent="Theme.AppCompat.Light" >
+        <item name="drawerArrowStyle">@style/DrawerIcon</item>
+
+    </style>
 
     <style name="TextColor" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textColorPrimary">@color/TextColorPrimary</item>
@@ -48,5 +54,11 @@
         <item name="color">@android:color/white</item>
     </style>
 
+    <style name="custom_toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/colorAccent</item>
+    </style>
 
+    <style name="DrawerIcon" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/colorAccent</item>
+    </style>
 </resources>
